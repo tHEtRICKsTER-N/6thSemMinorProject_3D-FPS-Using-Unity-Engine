@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 public class CanvasManager : MonoBehaviour
 {
+    [SerializeField] private GameObject _instructionsPanel;
+    [SerializeField] private GameObject _pausePanel;
+
     public void MainMenu()
     {
         SceneManager.LoadScene(0);
@@ -15,6 +18,7 @@ public class CanvasManager : MonoBehaviour
 
     public void Resume()
     {
+        _pausePanel.SetActive(false);
         Time.timeScale = 1;
     }
 
@@ -26,6 +30,18 @@ public class CanvasManager : MonoBehaviour
     public void StartGame()
     {
         SceneManager.LoadScene(1);
+    }
+
+    public void Instructions()
+    {
+        if (_instructionsPanel.activeInHierarchy)
+        {
+            _instructionsPanel.SetActive(false);
+        }
+        else
+        {
+            _instructionsPanel.SetActive(true);
+        }
     }
 
 }

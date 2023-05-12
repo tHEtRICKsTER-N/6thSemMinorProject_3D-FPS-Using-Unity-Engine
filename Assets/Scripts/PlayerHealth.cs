@@ -6,12 +6,13 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     public int currentHealth;
+    public bool gameOver = false;
+    
     [SerializeField] private int _maxHealth;
     [SerializeField] private GameObject _pausePanel;
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private GameObject _playerPanel;
     [SerializeField] private Text _healthText;
-    bool gameOver = false;
 
 
     void Start()

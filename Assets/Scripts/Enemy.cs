@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using TMPro;
 
 public class Enemy : MonoBehaviour
 {
@@ -9,19 +10,32 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _maxHealth;
     [SerializeField] private int _damageAmount;
     [SerializeField] private Slider _healthSlider;
+    [SerializeField] private AudioClip[] _audioClips;
+
+    /* 0 - idle
+     * 1 - chase
+     * 2 - attack
+     */
 
     NavMeshAgent agent;
     Animator anim;
     float currentHealth;
+    AudioSource aSource;
+    TMP_Text enemyCount;
 
     private void Start()
     {
+        enemyCount = GameObject.Find("ZombieCount").GetComponent<TMP_Text>();
+        aSource = GetComponent<AudioSource>();
         _healthSlider.maxValue = _maxHealth;
         currentHealth = _maxHealth;
         _healthSlider.value = currentHealth;
         anim = GetComponent<Animator>();
         _target = PlayerManager.obj.player;
         agent = GetComponent<NavMeshAgent>();
+
+        //to play idle audio
+        PlayAudio(0);
     }
 
     private void Update()
@@ -32,13 +46,19 @@ public class Enemy : MonoBehaviour
         {
             anim.SetBool("isChasing",true);
 
+            //to play chase audio
+            PlayAudio(1);
+
             agent.SetDestination(_target.position);    
 
             //attack
             if(dist <= agent.stoppingDistance)
             {
+                //to play attack audio
+                PlayAudio(2);
+
                 agent.isStopped = true;
-                anim.SetBool("Attack",true);
+                anim.SetBool("Attack", true);
                 LookAtPlayer();
             }
             else
@@ -50,6 +70,12 @@ public class Enemy : MonoBehaviour
         {
             agent.isStopped = false;
         }
+    }
+
+    void PlayAudio(int audioIndex)
+    {
+        aSource.clip = _audioClips[audioIndex];
+        aSource.Play();
     }
 
     void LookAtPlayer()
@@ -77,6 +103,11 @@ public class Enemy : MonoBehaviour
         if(currentHealth <= 0)
         {
             //death
+
+            var collider = GetComponent<CapsuleCollider>().enabled = false;
+
+            EnemyCounter.obj.enemyCount--;
+            enemyCount.text = "ZOMBIES REMAINING : " + EnemyCounter.obj.enemyCount;
             anim.enabled = false;
             Destroy(this.gameObject, 1.5f);
         }
